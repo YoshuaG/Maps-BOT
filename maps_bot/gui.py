@@ -2,6 +2,7 @@ import os
 import sys
 import threading
 import webbrowser
+from PIL import Image
 import customtkinter as ctk
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
@@ -23,9 +24,21 @@ class App(ctk.CTk):
         self.geometry("800x600")
         self.minsize(800, 600)
 
-        # Variáveis de Estado
-        self.resultados = []
+        # Configurar pasta de assets para os GIFs
+        self.assets_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+        os.makedirs(self.assets_dir, exist_ok=True)
+        
+        self.idle_gif_path = os.path.join(self.assets_dir, "idle.gif")
+        self.search_gif_path = os.path.join(self.assets_dir, "search.gif")
+        
+        self.current_gif_frames = []
+        self.gif_frame_idx = 0
+        self.gif_after_id = None
+
         self.is_running = False
+        self.resultados = []
+        
+        # Configurar grid principalse
 
         self.create_widgets()
 
@@ -67,6 +80,13 @@ class App(ctk.CTk):
 
         self.btn_search = ctk.CTkButton(self.input_frame, text="INICIAR BUSCA", font=ctk.CTkFont(size=14, weight="bold"), command=self.start_search_thread)
         self.btn_search.grid(row=1, column=3, rowspan=6, sticky="nsew", padx=20, pady=10)
+
+        # Espaço reservado para o GIF de Loading/Idle
+        self.lbl_gif = ctk.CTkLabel(self.input_frame, text="")
+        self.lbl_gif.grid(row=1, column=4, rowspan=6, sticky="nsew", padx=20, pady=10)
+        
+        # Iniciar GIF Idle
+        self.play_gif(self.idle_gif_path)
 
         # ---- Seção do Meio (Logs do Processo) ----
         ctk.CTkLabel(self.main_frame, text="Console de Execução:", font=ctk.CTkFont(size=12, weight="bold")).pack(anchor="w", padx=10, pady=(10,0))
@@ -171,6 +191,9 @@ class App(ctk.CTk):
         for widget in self.results_frame.winfo_children():
             widget.destroy()
 
+        # Atualizar gif
+        self.play_gif(self.search_gif_path)
+
         # Inicia a thread para não travar a interface
         thread = threading.Thread(target=self.run_bot_logic, args=(query, location, radius, max_results, min_rating, apenas_abertos), daemon=True)
         thread.start()
@@ -274,6 +297,7 @@ class App(ctk.CTk):
         finally:
             self.is_running = False
             self.after(0, lambda: self.toggle_inputs("normal"))
+            self.after(0, lambda: self.play_gif(self.idle_gif_path))
 
     def display_results_in_gui(self):
         """Popula o frame de resultados com os itens encontrados."""
@@ -313,7 +337,21 @@ class App(ctk.CTk):
         try:
             self.log(f"[*] Exportando dados para {formato.upper()}...")
             # Como a conversão de nome de arquivo usa formatação no formatter, chamamos diretamente
+            if formato == "csv":
+                arquivo = "resultados_busca.csv"
+            elif formato == "json":
+                arquivo = "resultados_busca.json"
+            elif formato == "excel":
+                arquivo = "resultados_busca.xlsx"
+            
             formatter.exportar_dados(self.resultados, formato)
+            
+            # Tentar abrir o arquivo no Windows
+            try:
+                if os.path.exists(arquivo):
+                    os.startfile(arquivo)
+            except AttributeError:
+                pass # Ignora erro de SO (se não for Windows, os.startfile não existe)
             self.log(f"[✔] Dados exportados com sucesso! Verifique a pasta raiz.")
         except Exception as e:
             self.log(f"[!] Erro ao exportar para {formato}: {e}")
@@ -336,6 +374,54 @@ class App(ctk.CTk):
                 self.after(0, lambda: self.btn_fix_playwright.configure(state="normal", text="Corrigir Navegador"))
                 
         threading.Thread(target=run_fix, daemon=True).start()
+
+    def play_gif(self, path):
+        # Cancelar animação atual de gif se existir
+        if self.gif_after_id:
+            self.after_cancel(self.gif_after_id)
+            self.gif_after_id = None
+            
+        self.current_gif_frames = []
+        self.gif_frame_idx = 0
+        
+        if not os.path.exists(path):
+            self.lbl_gif.configure(image=None, text=f"Faltando:\n{os.path.basename(path)}\n(Crie a pasta assets)")
+            return
+            
+        try:
+            gif = Image.open(path)
+            while True:
+                # Converter para RGBA para evitar problemas de transparência
+                frame = gif.copy().convert("RGBA")
+                
+                # Redimensionar para caber no espaço (agora maior)
+                frame.thumbnail((250, 250), Image.Resampling.LANCZOS)
+                
+                ctk_img = ctk.CTkImage(light_image=frame, size=frame.size)
+                
+                # Pega a duração do frame ou fallback para 80ms
+                duration = gif.info.get("duration", 80)
+                if duration == 0:
+                    duration = 80
+                    
+                self.current_gif_frames.append((ctk_img, duration))
+                gif.seek(gif.tell() + 1)
+        except EOFError:
+            pass
+            
+        if self.current_gif_frames:
+            self.lbl_gif.configure(text="")
+            self.update_gif_frame()
+            
+    def update_gif_frame(self):
+        if not self.current_gif_frames:
+            return
+            
+        img, duration = self.current_gif_frames[self.gif_frame_idx]
+        self.lbl_gif.configure(image=img)
+        
+        self.gif_frame_idx = (self.gif_frame_idx + 1) % len(self.current_gif_frames)
+        self.gif_after_id = self.after(duration, self.update_gif_frame)
 
 if __name__ == "__main__":
     app = App()
