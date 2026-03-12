@@ -12,6 +12,13 @@ const resultsGrid = document.getElementById('results-grid');
 const resultCount = document.getElementById('result-count');
 const exportBtns = document.querySelectorAll('.export-btn');
 const toast = document.getElementById('toast');
+const radiusInput = document.getElementById('radius');
+const radiusValueDisplay = document.getElementById('radius-value');
+
+// Update radius display when slider moves
+radiusInput.addEventListener('input', (e) => {
+    radiusValueDisplay.textContent = e.target.value;
+});
 
 // Global state
 let pollInterval = null;

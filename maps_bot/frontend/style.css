@@ -36,9 +36,14 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: -1;
-    background: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 40%);
-    filter: blur(80px);
+    background-image: url('https://brasil.mapbiomas.org/wp-content/themes/mapbiomas/assets/images/default-thumbnail.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Adicionando um overlay escuro para não atrapalhar a leitura dos textos */
+    background-color: #0f172a;
+    background-blend-mode: overlay;
+    opacity: 0.8;
 }
 
 .container {
@@ -64,6 +69,7 @@ header h1 {
 header h1 span {
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -138,6 +144,57 @@ input[type="number"]:focus {
 
 input::placeholder {
     color: rgba(148, 163, 184, 0.5);
+}
+
+/* Range Slider */
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    outline: none;
+    transition: var(--transition);
+    padding: 0;
+}
+
+.slider:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    transition: transform 0.2s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    background: var(--accent-color);
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    border: none;
+    transition: transform 0.2s;
+}
+
+.slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    background: var(--accent-color);
 }
 
 /* Checkbox */
@@ -449,8 +506,61 @@ input::placeholder {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Footer */
+footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    text-align: center;
+    animation: fadeInDown 1s ease-out;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.footer-content p {
+    margin-bottom: 0.5rem;
+}
+
+.footer-content strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: var(--transition);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.footer-links a:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-row { flex-direction: column; gap: 1.5rem; }
     header h1 { font-size: 2.2rem; }
+    .footer-links { flex-direction: column; gap: 0.5rem; }
 }
