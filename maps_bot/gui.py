@@ -1,6 +1,7 @@
 import os
 import sys
 import threading
+import webbrowser
 import customtkinter as ctk
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
@@ -283,6 +284,7 @@ class App(ctk.CTk):
             tel = item.get("telefone", "Sem telefone")
             onda = item.get("status_aberto", "Desconhecido")
             dist = item.get("distancia_km", None)
+            link = item.get("link", "")
             
             # Criar um card para cada resultado
             card = ctk.CTkFrame(self.results_frame, corner_radius=5, fg_color=("gray85", "gray20"))
@@ -295,7 +297,13 @@ class App(ctk.CTk):
             info_text = f"{i}. {nome} | ⭐ {nota} | 📞 {tel}{dist_str}{status_str}"
             
             lbl = ctk.CTkLabel(card, text=info_text, font=ctk.CTkFont(size=12, weight="bold"))
-            lbl.pack(anchor="w", padx=10, pady=5)
+            lbl.pack(anchor="w", padx=10, pady=(5, 0))
+            
+            if link and link != "Link indisponível":
+                # Mostra o link e usa uma fonte menor, com evento de clique e hover
+                link_lbl = ctk.CTkLabel(card, text=f"🔗 {link}", font=ctk.CTkFont(size=10, underline=True), text_color=("blue", "cyan"), cursor="hand2")
+                link_lbl.pack(anchor="w", padx=10, pady=(0, 5))
+                link_lbl.bind("<Button-1>", lambda e, url=link: webbrowser.open(url))
 
     def exportar_resultados(self, formato):
         if not self.resultados:
