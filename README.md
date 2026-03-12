@@ -231,17 +231,23 @@ python maps_bot/gui.py
 google-maps-bot
 │
 ├── maps_bot
-│   ├── gui.py
-│   ├── ai_interpreter.py
-│   ├── maps_search.py
-│   ├── scraper.py
-│   ├── formatter.py
+│   ├── api.py                 # Servidor Backend (FastAPI)
+│   ├── gui.py                 # Interface App Desktop Original
+│   ├── ai_interpreter.py      # IA para melhorar buscas (g4f)
+│   ├── maps_search.py         # Automação do Google Maps (Playwright)
+│   ├── scraper.py             # Raspagem de dados
+│   ├── formatter.py           # Exportador JSON/CSV/Excel
+│   │
+│   └── frontend               # Interface Web (HTML/JS/CSS)
+│       ├── index.html
+│       ├── style.css
+│       └── script.js
 │
 ├── docs
-│   ├── images
+│   └── images
 │
 ├── requirements.txt
-├── README.md
+└── README.md
 ```
 
 ---
