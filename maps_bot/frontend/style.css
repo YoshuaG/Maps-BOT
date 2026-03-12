@@ -24,8 +24,8 @@
 body {
     background-color: var(--bg-dark);
     color: var(--text-primary);
-    min-height: 100vh;
-    overflow-x: hidden;
+    margin: 0;
+    overflow: hidden; /* Prevent body scroll, use inner scroll */
 }
 
 /* Background Gradients & Effects */
@@ -46,8 +46,24 @@ body {
     opacity: 0.8;
 }
 
+/* Layout Wrapper */
+.app-wrapper {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+.main-column {
+    flex: 1;
+    overflow-y: auto;
+    min-width: 0;
+    height: 100%;
+}
+
 .container {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 2rem;
 }
@@ -360,6 +376,63 @@ input::placeholder {
 ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 4px; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* Resizer */
+.resizer {
+    width: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    cursor: col-resize;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+    user-select: none;
+}
+
+.resizer:hover, .resizer:active {
+    background-color: rgba(59, 130, 246, 0.3);
+}
+
+.resizer-handle {
+    width: 4px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.resizer:hover .resizer-handle, .resizer:active .resizer-handle {
+    background-color: var(--primary-color);
+}
+
+/* Right Sidebar (Logs) */
+.logs-sidebar {
+    width: 380px;
+    min-width: 250px;
+    max-width: 800px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-left: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    height: 100%;
+    margin-bottom: 0; /* Remove margin from glass-panel */
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.sidebar-content .logs-container {
+    flex: 1;
+    height: auto; /* Let flex handle height */
+}
 
 /* Results Panel */
 .export-actions {

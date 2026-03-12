@@ -14,10 +14,49 @@ const exportBtns = document.querySelectorAll('.export-btn');
 const toast = document.getElementById('toast');
 const radiusInput = document.getElementById('radius');
 const radiusValueDisplay = document.getElementById('radius-value');
+const ratingInput = document.getElementById('min_rating');
+const ratingValueDisplay = document.getElementById('rating-value');
+
+// Resizer logic
+const resizer = document.getElementById('resizer');
+const rightPane = document.getElementById('right-pane');
+let isResizing = false;
+
+resizer.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    document.body.style.cursor = 'col-resize';
+    // Prevent text selection while dragging
+    document.body.style.userSelect = 'none';
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+    
+    // Calculate new width based on mouse position from the right edge of the screen
+    const newWidth = window.innerWidth - e.clientX;
+    
+    // Enforce min and max constraints (defined in CSS as 250px and 800px)
+    if (newWidth >= 250 && newWidth <= 800) {
+        rightPane.style.width = `${newWidth}px`;
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    if (isResizing) {
+        isResizing = false;
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+    }
+});
 
 // Update radius display when slider moves
 radiusInput.addEventListener('input', (e) => {
     radiusValueDisplay.textContent = e.target.value;
+});
+
+// Update rating display when slider moves
+ratingInput.addEventListener('input', (e) => {
+    ratingValueDisplay.textContent = parseFloat(e.target.value).toFixed(1);
 });
 
 // Global state
@@ -86,8 +125,26 @@ function renderResults(results) {
         
         const dist = item.distancia_km ? `${item.distancia_km.toFixed(1)} km` : 'N/A';
         const rating = item.avaliacao || 'N/A';
-        const phone = item.telefone || 'Sem telefone';
+        const rawPhone = item.telefone || 'Sem telefone';
         const link = item.link && item.link !== 'Link indisponível' ? item.link : '#';
+        
+        let phoneDisplay = '';
+        if (rawPhone !== 'Sem telefone') {
+            // Remove tudo exceto dígitos para o link
+            const cleanPhone = rawPhone.replace(/\D/g, '');
+            // Formata a visualização removendo ícones estranhos do scraping
+            const readablePhone = rawPhone.replace(/[^\d\s\(\)\-\+]/g, '').trim();
+            
+            if (cleanPhone.length >= 10) {
+                // Adiciona 55 (Brasil) se já não começar com 55
+                const waNumber = cleanPhone.startsWith('55') ? cleanPhone : '55' + cleanPhone;
+                phoneDisplay = `<span>📞 <a href="https://wa.me/${waNumber}" target="_blank" class="card-link" style="margin-top: 0; font-size: inherit; display: inline;">${readablePhone}</a></span>`;
+            } else {
+                phoneDisplay = `<span>📞 ${readablePhone}</span>`;
+            }
+        } else {
+            phoneDisplay = `<span>📞 Sem telefone</span>`;
+        }
 
         const cardHTML = `
             <div class="result-card">
@@ -99,7 +156,7 @@ function renderResults(results) {
                         <span>📍 ${dist}</span>
                     </div>
                     <div class="info-row">
-                        <span>📞 ${phone}</span>
+                        ${phoneDisplay}
                     </div>
                     ${statusText !== 'Desconhecido' ? 
                         `<div class="info-row"><span class="status-badge ${statusClass}">${icon} ${statusText}</span></div>` : ''}
