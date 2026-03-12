@@ -7,3 +7,6 @@ colorama
 customtkinter
 geopy
 Pillow
+fastapi
+uvicorn
+pydantic

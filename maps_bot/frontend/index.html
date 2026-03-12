@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps Bot Pro</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background element -->
+    <div class="bg-gradient"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Maps Bot <span>Pro</span></h1>
+            <p>Busca inteligente no Google Maps turbinada com Inteligência Artificial</p>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Search Panel -->
+            <section class="glass-panel search-panel">
+                <form id="search-form">
+                    <div class="form-group full-width">
+                        <label for="query">O que deseja buscar?</label>
+                        <input type="text" id="query" placeholder="Ex: hamburgueria artesanal, conserto celular..." required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="location">Localização</label>
+                            <input type="text" id="location" placeholder="Ex: Av Paulista, SP (Vazio = Atual)">
+                        </div>
+                        <div class="form-group">
+                            <label for="radius">Raio Máx (km)</label>
+                            <input type="number" id="radius" value="5" min="1" step="0.5">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="max_results">Qtd. Máxima</label>
+                            <input type="number" id="max_results" value="5" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="min_rating">Nota Mínima</label>
+                            <input type="number" id="min_rating" value="0.0" min="0" max="5" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label class="custom-checkbox">
+                            <input type="checkbox" id="apenas_abertos">
+                            <span class="checkmark"></span>
+                            Apenas locais abertos agora
+                        </label>
+                    </div>
+
+                    <button type="submit" id="btn-search" class="primary-btn">
+                        <span class="btn-text">Iniciar Busca Inteligente</span>
+                        <div class="spinner hidden" id="search-spinner"></div>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Status Logs -->
+            <section class="glass-panel logs-panel">
+                <div class="panel-header">
+                    <h2>Console de Execução</h2>
+                    <span class="status-indicator">Pronto</span>
+                </div>
+                <div class="logs-container" id="logs-container">
+                    <p class="log-entry system">Aguardando início da busca...</p>
+                </div>
+            </section>
+
+            <!-- Results Panel -->
+            <section class="glass-panel results-panel hidden" id="results-section">
+                <div class="panel-header">
+                    <h2>Resultados Encontrados</h2>
+                    <span class="result-count" id="result-count">0 locais</span>
+                </div>
+                
+                <div class="export-actions">
+                    <button class="export-btn" data-format="json">Exportar JSON</button>
+                    <button class="export-btn" data-format="csv">Exportar CSV</button>
+                    <button class="export-btn" data-format="excel">Exportar Excel</button>
+                </div>
+
+                <div class="results-grid" id="results-grid">
+                    <!-- Cards de resultado serão injetados aqui via JS -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">Notificação</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
