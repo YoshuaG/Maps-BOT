@@ -55,13 +55,11 @@ class App(ctk.CTk):
                 print(f"Erro ao carregar fundo: {e}")
                 
         # App Icon (Nativo do Windows/Interface)
-        icon_path = os.path.join(self.assets_dir, "icon.jpg")
+        icon_path = os.path.join(self.assets_dir, "icon.ico")
         if os.path.exists(icon_path):
             try:
-                # O Tkinter prefere a imagem carregada pela Pillow via PhotoImage
-                from PIL import ImageTk
-                icon_img = ImageTk.PhotoImage(Image.open(icon_path))
-                self.iconphoto(True, icon_img)
+                # O Windows exige .ico puro para substituir o ícone da barra de título e barra de tarefas
+                self.after(200, lambda: self.iconbitmap(icon_path))
             except Exception as e:
                 print(f"Erro ao carregar ícone: {e}")
 
