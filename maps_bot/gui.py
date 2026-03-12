@@ -2,7 +2,8 @@ import os
 import sys
 import threading
 import webbrowser
-from PIL import Image
+import tkinter as tk
+from PIL import Image, ImageEnhance
 import customtkinter as ctk
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
@@ -38,7 +39,20 @@ class App(ctk.CTk):
         self.is_running = False
         self.resultados = []
         
-        # Configurar grid principalse
+        # Background Image (Fosco)
+        bg_path = os.path.join(self.assets_dir, "background.jpg")
+        if os.path.exists(bg_path):
+            try:
+                bg_pil = Image.open(bg_path).convert("RGBA")
+                enhancer = ImageEnhance.Brightness(bg_pil)
+                bg_pil = enhancer.enhance(0.3) # 30% do brilho (Efeito Fosco Escurecido)
+                
+                # Tamanho HD para preencher as laterais sob os frames
+                bg_img = ctk.CTkImage(light_image=bg_pil, size=(1920, 1080))
+                self.bg_label = ctk.CTkLabel(self, text="", image=bg_img)
+                self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+            except Exception as e:
+                print(f"Erro ao carregar fundo: {e}")
 
         self.create_widgets()
 
@@ -88,16 +102,28 @@ class App(ctk.CTk):
         # Iniciar GIF Idle
         self.play_gif(self.idle_gif_path)
 
+        # ---- PanedWindow (Para permitir redimensionamento) ----
+        self.paned_window = tk.PanedWindow(self.main_frame, orient="vertical", bg="#2b2b2b", bd=0, sashwidth=6, sashrelief="flat")
+        self.paned_window.pack(fill="both", expand=True, padx=10, pady=5)
+        
+        # Frame Superior (Logs)
+        self.pane_top = ctk.CTkFrame(self.paned_window, fg_color="transparent")
+        self.paned_window.add(self.pane_top, minsize=100)
+        
+        # Frame Inferior (Resultados)
+        self.pane_bottom = ctk.CTkFrame(self.paned_window, fg_color="transparent")
+        self.paned_window.add(self.pane_bottom, minsize=150)
+
         # ---- Seção do Meio (Logs do Processo) ----
-        ctk.CTkLabel(self.main_frame, text="Console de Execução:", font=ctk.CTkFont(size=12, weight="bold")).pack(anchor="w", padx=10, pady=(10,0))
-        self.textbox_log = ctk.CTkTextbox(self.main_frame, height=100, corner_radius=5)
-        self.textbox_log.pack(fill="x", padx=10, pady=5)
+        ctk.CTkLabel(self.pane_top, text="Console de Execução:", font=ctk.CTkFont(size=12, weight="bold")).pack(anchor="w", pady=(0,5))
+        self.textbox_log = ctk.CTkTextbox(self.pane_top, corner_radius=5)
+        self.textbox_log.pack(fill="both", expand=True)
         self.textbox_log.configure(state="disabled")
 
         # ---- Seção de Resultados na Tela ----
-        ctk.CTkLabel(self.main_frame, text="Resultados Encontrados:", font=ctk.CTkFont(size=12, weight="bold")).pack(anchor="w", padx=10, pady=(10,0))
-        self.results_frame = ctk.CTkScrollableFrame(self.main_frame, height=150, corner_radius=5)
-        self.results_frame.pack(fill="both", expand=True, padx=10, pady=5)
+        ctk.CTkLabel(self.pane_bottom, text="Resultados Encontrados:", font=ctk.CTkFont(size=12, weight="bold")).pack(anchor="w", pady=(10,5))
+        self.results_frame = ctk.CTkScrollableFrame(self.pane_bottom, corner_radius=5)
+        self.results_frame.pack(fill="both", expand=True)
 
         # ---- Seção Inferior (Resultados e Exportação) ----
         self.export_frame = ctk.CTkFrame(self.main_frame)
