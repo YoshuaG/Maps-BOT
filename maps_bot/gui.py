@@ -53,6 +53,17 @@ class App(ctk.CTk):
                 self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
             except Exception as e:
                 print(f"Erro ao carregar fundo: {e}")
+                
+        # App Icon (Nativo do Windows/Interface)
+        icon_path = os.path.join(self.assets_dir, "icon.jpg")
+        if os.path.exists(icon_path):
+            try:
+                # O Tkinter prefere a imagem carregada pela Pillow via PhotoImage
+                from PIL import ImageTk
+                icon_img = ImageTk.PhotoImage(Image.open(icon_path))
+                self.iconphoto(True, icon_img)
+            except Exception as e:
+                print(f"Erro ao carregar ícone: {e}")
 
         self.create_widgets()
 
