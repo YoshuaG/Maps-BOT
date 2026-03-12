@@ -1,0 +1,20 @@
+# Ambiente de Desenvolvimento
+venv/
+env/
+.env
+
+# Arquivos compiliados
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Arquivos de Resultado/Log
+*.csv
+*.xlsx
+*.json
+*.log
+
+# Ferramentas e IDE
+.vscode/
+.idea/
+*.swp

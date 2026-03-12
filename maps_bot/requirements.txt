@@ -1,0 +1,8 @@
+playwright
+g4f
+pandas
+openpyxl
+python-dotenv
+colorama
+customtkinter
+geopy
