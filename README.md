@@ -57,8 +57,6 @@ Todos os dados são organizados e exportados em:
 
 ![Resultados](docs/images/results.png)
 
-*(As imagens acima são exemplos. Substitua pelos prints reais do software.)*
-
 ---
 
 # 🚀 Principais Funcionalidades
